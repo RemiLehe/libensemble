@@ -43,6 +43,7 @@ gen_specs = {'gen_f': uniform_random_sample,     # Function generating sim_f inp
 # end_gen_specs_rst_tag
 
 persis_info = add_unique_random_streams({}, nworkers + 1)
+persis_info[1]['lambda'] = lambda x: sum(x)
 
 exit_criteria = {'gen_max': 501, 'elapsed_wallclock_time': 300}
 
