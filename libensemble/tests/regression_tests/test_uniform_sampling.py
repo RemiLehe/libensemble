@@ -42,8 +42,11 @@ gen_specs = {'gen_f': uniform_random_sample,     # Function generating sim_f inp
              }
 # end_gen_specs_rst_tag
 
+def func_to_share(x):
+    return sum(x)
+
 persis_info = add_unique_random_streams({}, nworkers + 1)
-persis_info[1]['lambda'] = lambda x: sum(x)
+persis_info[1]['lambda'] = func_to_share
 
 exit_criteria = {'gen_max': 501, 'elapsed_wallclock_time': 300}
 
