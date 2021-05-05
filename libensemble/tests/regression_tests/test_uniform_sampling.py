@@ -23,6 +23,10 @@ from libensemble.gen_funcs.sampling import uniform_random_sample
 from libensemble.tools import parse_args, save_libE_output, add_unique_random_streams
 from libensemble.tests.regression_tests.support import six_hump_camel_minima as minima
 
+import dill
+from mpi4py import MPI
+MPI.pickle.__init__(dill.dumps, dill.loads)
+
 nworkers, is_manager, libE_specs, _ = parse_args()
 libE_specs['save_every_k_sims'] = 400
 libE_specs['save_every_k_gens'] = 300
@@ -42,11 +46,8 @@ gen_specs = {'gen_f': uniform_random_sample,     # Function generating sim_f inp
              }
 # end_gen_specs_rst_tag
 
-def func_to_share(x):
-    return sum(x)
-
 persis_info = add_unique_random_streams({}, nworkers + 1)
-persis_info[1]['lambda'] = func_to_share
+persis_info[1]['lambda'] = lambda x: sum(x)
 
 exit_criteria = {'gen_max': 501, 'elapsed_wallclock_time': 300}
 
@@ -62,4 +63,4 @@ if is_manager:
         assert np.min(np.sum((H['x'] - m)**2, 1)) < tol
 
     print("\nlibEnsemble found the 6 minima within a tolerance " + str(tol))
-    save_libE_output(H, persis_info, __file__, nworkers)
+    # save_libE_output(H, persis_info, __file__, nworkers)
