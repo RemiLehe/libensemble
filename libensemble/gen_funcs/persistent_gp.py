@@ -56,6 +56,7 @@ def persistent_gp_gen_f(H, persis_info, gen_specs, libE_info):
 
     # Receive information from the manager (or a STOP_TAG)
     tag = None
+    counter = 0
     while tag not in [STOP_TAG, PERSIS_STOP]:
 
         # Ask the optimizer to generate `batch_size` new points
@@ -65,6 +66,10 @@ def persistent_gp_gen_f(H, persis_info, gen_specs, libE_info):
             x = opt.ask()
             H_o['x'][i] = x
 
+            with open('model%d.txt'%counter, 'w') as f:
+                f.write(opt.gp.__str__())
+            counter += 1
+            
         # Send data and get results from finished simulation
         # Blocking call: waits for simulation results to be sent by the manager
         tag, Work, calc_in = sendrecv_mgr_worker_msg(libE_info['comm'], H_o)
@@ -235,6 +240,7 @@ def persistent_gp_mf_disc_gen_f(H, persis_info, gen_specs, libE_info):
 
     # Receive information from the manager (or a STOP_TAG)
     tag = None
+    counter = 0
     while tag not in [STOP_TAG, PERSIS_STOP]:
 
         # Ask the optimizer to generate `batch_size` new points
@@ -245,6 +251,11 @@ def persistent_gp_mf_disc_gen_f(H, persis_info, gen_specs, libE_info):
             H_o['x'][i] = input_vector
             H_o['z'][i] = z[0]
 
+            with open('model%d.txt' %counter, 'w') as f:
+                f.write(opt.gp.__str__())
+            counter += 1
+
+            
         # Send data and get results from finished simulation
         # Blocking call: waits for simulation results to be sent by the manager
         tag, Work, calc_in = sendrecv_mgr_worker_msg(libE_info['comm'], H_o)
